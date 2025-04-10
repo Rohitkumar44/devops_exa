@@ -1,0 +1,72 @@
+pipeline {
+
+
+ agent any
+
+
+  stages {
+
+
+      stage('clone') {
+
+
+          steps {
+
+
+              git branch: 'main', url:'https://github.com/Rohitkumar44/devops_exa.git'
+
+
+          }
+
+
+      }
+
+
+      stage('Build Image & Push into Docker hub'){
+
+
+          steps{
+
+
+               sh 'docker build -t rohit44docker/spring:v1.0 .'
+
+
+               echo "Docker image build sucessfully completed."
+
+
+                  //withCredentials([usernamePassword(credentialsId: 'Docker_Hub_Credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+
+                      sh 'docker login -u rohit44docker -p 1234Rohit'
+
+
+               
+
+
+                      sh 'docker push rohit44docker/spring:v1.0'
+
+
+                  }
+
+
+          }
+
+          stage("creating Deployment"){
+
+              steps{
+
+                  sh 'kubectl apply -f deployment.yaml'
+
+				  sh 'kubectl apply -f service.yaml'		  
+
+              }
+
+          }
+
+
+  }
+
+
+}
+
+
